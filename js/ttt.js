@@ -136,7 +136,7 @@ function checkDiagonalA(posX, posY, figure) {
   } while(left === false || right === false)
 
   console.log(condition + ("(diagonalA) | winning condition = " + settings.winningCondition));
-  if(condition === settings.winningCondition) {
+  if(condition >= settings.winningCondition) {
     drawWinningLine(leftX, leftY, rightX + getCellSize(), rightY + getCellSize())
   }
 }
@@ -172,7 +172,7 @@ function checkDiagonalB(posX, posY, figure) {
 
   console.log(condition + ("(diagonalB) | winning condition = " + settings.winningCondition));
   console.log("=========================");
-  if(condition === settings.winningCondition) {
+  if(condition >= settings.winningCondition) {
     drawWinningLine(leftX, leftY + getCellSize(), rightX + getCellSize(), rightY)
   }
 }
@@ -201,7 +201,7 @@ function checkHorizontal(posX, posY, figure) {
     }
   } while(left === false || right === false)
 
-  console.log(condition + ("(horizontal) | winning condition = " + settings.winningCondition));
+  console.log(condition >= ("(horizontal) | winning condition = " + settings.winningCondition));
   if(condition === settings.winningCondition) {
     drawWinningLine(leftX, posY + getCellSize() / 2, rightX + getCellSize(), posY + getCellSize() / 2)
   }
@@ -233,7 +233,7 @@ function checkVertical(posX, posY, figure) {
   } while(up === false || down === false)
 
   console.log(condition + ("(vertical) | winning condition = " + settings.winningCondition));
-  if(condition === settings.winningCondition) {
+  if(condition >= settings.winningCondition) {
     drawWinningLine(posX + getCellSize() / 2, upY, posX + getCellSize() / 2, downY + getCellSize())
   }
 }
