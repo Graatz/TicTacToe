@@ -1,0 +1,43 @@
+<head>
+  <link rel="stylesheet" href="css/framework.css">
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body onload="initCanvas()">
+    <div class="row">
+      <div class="container">
+        <div class="col-2 content-center"></div>
+        <div class="col-8 content-center">
+          <div id="canvas-container"></div>
+          <button type="button" name="button" class="azure-button restart-button" onclick="initBoard()">restart</button>
+          <button id='settings-button' type="button" name="button" class="default-button restart-button" onclick="showSettings()">show settings</button>
+          <p id="error-message"></p>
+          <div id="settings">
+            Board size:
+            <select id="board-size" class="input-text settings-component">
+              <option type="number">3</option>
+              <option type="number">4</option>
+              <option type="number">5</option>
+              <option type="number">6</option>
+              <option type="number">7</option>
+              <option type="number">10</option>
+              <option type="number">12</option>
+              <option type="number">15</option>
+              <option type="number">20</option>
+              <option type="number">25</option>
+              <option type="number">30</option>
+            </select>
+
+            Winning condition:
+            <input id="winning-condition" type="number" name="" value="" class="input-text settings-component">
+
+            <button type="button" name="button" class="purple-button settings-component" onclick="applySettings()">apply settings</button>
+          </div>
+        </div>
+        <div class="col-2"></div>
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="js/ttt.js"></script>
