@@ -59,23 +59,6 @@ function applySettings() {
   initBoard();
 }
 
-function setBoardSize() {
-  var newSize = Math.floor(document.getElementById("board-size").value);
-  if (newSize <= 20 && newSize >= 3) {
-    document.getElementById("error-message").innerHTML = "";
-    cellSize = Math.floor(canvas.width / newSize);
-    initBoard();
-  } else {
-    console.log(newSize);
-    if (newSize > 20)
-      document.getElementById("error-message").innerHTML = "Maximum board size is 20";
-    else if (newSize < 3)
-      document.getElementById("error-message").innerHTML = "Minimum board size is 3";
-    else if (newSize === undefined || newSize === null)
-      document.getElementById("error-message").innerHTML = "Type board size";
-  }
-}
-
 function cell(posX, posY) {
   this.posX = posX;
   this.posY = posY;
@@ -122,6 +105,8 @@ function checkIfWin(cell, figure) {
     checkHorizontal(cell.posX, cell.posY, figure);
     checkDiagonalA(cell.posX, cell.posY, figure);
     checkDiagonalB(cell.posX, cell.posY, figure);
+
+    console.log("board size: " + settings.boardSize + " | " + "cell size: " + getCellSize());
 }
 
 function checkDiagonalA(posX, posY, figure) {
@@ -150,8 +135,8 @@ function checkDiagonalA(posX, posY, figure) {
     }
   } while(left === false || right === false)
 
-  console.log(condition + (" winning condition = " + settings.winningCondition));
-  if(condition == settings.winningCondition) {
+  console.log(condition + ("(diagonalA) | winning condition = " + settings.winningCondition));
+  if(condition === settings.winningCondition) {
     drawWinningLine(leftX, leftY, rightX + getCellSize(), rightY + getCellSize())
   }
 }
@@ -160,29 +145,34 @@ function checkDiagonalB(posX, posY, figure) {
   var condition = 1;
   var leftX = posX, leftY = posY, left = false;
   var rightX = posX, rightY = posY, right = false;
-
+  console.log("=========================");
+  console.log("clicked: " + posX + ", " + posY);
   do {
     if (left === false) {
       if (cellExists(leftX - getCellSize(), leftY + getCellSize()) && getCell(leftX - getCellSize(), leftY + getCellSize()).figure === figure) {
-        condition++;
         leftX -= getCellSize();
         leftY += getCellSize();
+        condition++;
+        console.log("added diagonalB" + " X: " + leftX + " Y: " + leftY);
       }
       else
         left = true;
     }
     if (right === false) {
       if (cellExists(rightX + getCellSize(), rightY - getCellSize()) && getCell(rightX + getCellSize(), rightY - getCellSize()).figure === figure) {
-        condition++;
         rightX += getCellSize();
         rightY -= getCellSize();
+        console.log("added diagonalB" + " X: " + rightX + " Y: " + rightY);
+        condition++;
       }
       else
         right = true;
     }
   } while(left === false || right === false)
 
-  if(condition == settings.winningCondition) {
+  console.log(condition + ("(diagonalB) | winning condition = " + settings.winningCondition));
+  console.log("=========================");
+  if(condition === settings.winningCondition) {
     drawWinningLine(leftX, leftY + getCellSize(), rightX + getCellSize(), rightY)
   }
 }
@@ -211,7 +201,8 @@ function checkHorizontal(posX, posY, figure) {
     }
   } while(left === false || right === false)
 
-  if(condition == settings.winningCondition) {
+  console.log(condition + ("(horizontal) | winning condition = " + settings.winningCondition));
+  if(condition === settings.winningCondition) {
     drawWinningLine(leftX, posY + getCellSize() / 2, rightX + getCellSize(), posY + getCellSize() / 2)
   }
 }
@@ -231,7 +222,7 @@ function checkVertical(posX, posY, figure) {
         up = true;
     }
     if (down === false) {
-      if (cellExists(posX, downY - getCellSize()) && getCell(posX, downY + getCellSize()).figure === figure) {
+      if (cellExists(posX, downY + getCellSize()) && getCell(posX, downY + getCellSize()).figure === figure) {
         condition++;
         downY += getCellSize();
       }
@@ -241,7 +232,8 @@ function checkVertical(posX, posY, figure) {
 
   } while(up === false || down === false)
 
-  if(condition == settings.winningCondition) {
+  console.log(condition + ("(vertical) | winning condition = " + settings.winningCondition));
+  if(condition === settings.winningCondition) {
     drawWinningLine(posX + getCellSize() / 2, upY, posX + getCellSize() / 2, downY + getCellSize())
   }
 }
@@ -252,14 +244,6 @@ function drawWinningLine(posX1, posY1, posX2, posY2) {
   ctx.moveTo(posX1, posY1);
   ctx.lineTo(posX2, posY2);
   ctx.stroke();
-}
-
-function cellExists(posX, posY) {
-  if (getCell(posX, posY) != null)
-    return true;
-  else {
-    return false;
-  }
 }
 
 function drawX(posX, posY) {
@@ -285,9 +269,26 @@ function drawO(posX, posY) {
   ctx.strokeStyle = "#333";
 }
 
+function cellExists(posX, posY) {
+  if (posX >= 0 && posX <= (canvas.width - 1) && posY >= 0 && posY <= (canvas.height - 1)) {
+    console.log("cell " + posX + ", " + posY + "exists");
+    return true;
+  }
+  else {
+    console.log("cell " + posX + ", " + posY + "doesnt exists");
+    return false;
+  }
+}
+
 function getCell(posX, posY) {
-  var boardIndex = ((Math.floor(posY / getCellSize()) * settings.boardSize)) + (Math.floor(posX / getCellSize()));
-  return board[boardIndex];
+  if (cellExists(posX, posY)) {
+    var boardIndex = ((Math.floor(posY / getCellSize()) * settings.boardSize)) + (Math.floor(posX / getCellSize()));
+
+    return board[boardIndex];
+  }
+  else {
+    return new cell(null, null);
+  }
 }
 
 function getboardDimension() {
@@ -315,6 +316,7 @@ function initBoard() {
   var currentRow = 0;
   var currentCol = 0;
 
+  console.log("------------------------------");
   for (var i = 0; i < settings.boardSize * settings.boardSize; i++) {
     if (currentCol == settings.boardSize && i > 0) {
       currentRow++;
@@ -323,8 +325,9 @@ function initBoard() {
 
     board[i] = new cell(currentCol * getCellSize(), currentRow * getCellSize());
     currentCol++;
+    console.log("Cell " + i + " X: " + board[i].posX + " Y: " + board[i].posY);
   }
-
+  console.log("------------------------------");
   drawBoard();
 }
 
