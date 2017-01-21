@@ -1,8 +1,9 @@
 var board = [];
 var turn = 0;
 
-var canvas;
-var ctx;
+var canvas, ctx;
+
+var paused = false;
 
 var settings = {
   hidden : true,
@@ -85,8 +86,6 @@ cell.prototype.isEmpty = function() {
   if (this.figure === 'N' && this.figure === 'N')
     return true;
   else {
-    if (this.figure === 'X') console.log("There is already X in this cell");
-    else if (this.figure === 'O') console.log("There is already O in this cell");
     return false;
   }
 };
@@ -105,8 +104,6 @@ function checkIfWin(cell, figure) {
     checkHorizontal(cell.posX, cell.posY, figure);
     checkDiagonalA(cell.posX, cell.posY, figure);
     checkDiagonalB(cell.posX, cell.posY, figure);
-
-    console.log("board size: " + settings.boardSize + " | " + "cell size: " + getCellSize());
 }
 
 function checkDiagonalA(posX, posY, figure) {
@@ -116,7 +113,8 @@ function checkDiagonalA(posX, posY, figure) {
 
   do {
     if (left === false) {
-      if (cellExists(leftX - getCellSize(), leftY - getCellSize()) && getCell(leftX - getCellSize(), leftY - getCellSize()).figure === figure) {
+      if (cellExists(leftX - getCellSize(), leftY - getCellSize()) &&
+          getCell(leftX - getCellSize(), leftY - getCellSize()).figure === figure) {
         condition++;
         leftX -= getCellSize();
         leftY -= getCellSize();
@@ -125,7 +123,8 @@ function checkDiagonalA(posX, posY, figure) {
         left = true;
     }
     if (right === false) {
-      if (cellExists(rightX + getCellSize(), rightY + getCellSize()) && getCell(rightX + getCellSize(), rightY + getCellSize()).figure === figure) {
+      if (cellExists(rightX + getCellSize(), rightY + getCellSize()) &&
+          getCell(rightX + getCellSize(), rightY + getCellSize()).figure === figure) {
         condition++;
         rightX += getCellSize();
         rightY += getCellSize();
@@ -135,7 +134,6 @@ function checkDiagonalA(posX, posY, figure) {
     }
   } while(left === false || right === false)
 
-  console.log(condition + ("(diagonalA) | winning condition = " + settings.winningCondition));
   if(condition >= settings.winningCondition) {
     drawWinningLine(leftX, leftY, rightX + getCellSize(), rightY + getCellSize())
   }
@@ -145,24 +143,22 @@ function checkDiagonalB(posX, posY, figure) {
   var condition = 1;
   var leftX = posX, leftY = posY, left = false;
   var rightX = posX, rightY = posY, right = false;
-  console.log("=========================");
-  console.log("clicked: " + posX + ", " + posY);
   do {
     if (left === false) {
-      if (cellExists(leftX - getCellSize(), leftY + getCellSize()) && getCell(leftX - getCellSize(), leftY + getCellSize()).figure === figure) {
+      if (cellExists(leftX - getCellSize(), leftY + getCellSize()) &&
+          getCell(leftX - getCellSize(), leftY + getCellSize()).figure === figure) {
         leftX -= getCellSize();
         leftY += getCellSize();
         condition++;
-        console.log("added diagonalB" + " X: " + leftX + " Y: " + leftY);
       }
       else
         left = true;
     }
     if (right === false) {
-      if (cellExists(rightX + getCellSize(), rightY - getCellSize()) && getCell(rightX + getCellSize(), rightY - getCellSize()).figure === figure) {
+      if (cellExists(rightX + getCellSize(), rightY - getCellSize()) &&
+          getCell(rightX + getCellSize(), rightY - getCellSize()).figure === figure) {
         rightX += getCellSize();
         rightY -= getCellSize();
-        console.log("added diagonalB" + " X: " + rightX + " Y: " + rightY);
         condition++;
       }
       else
@@ -170,8 +166,6 @@ function checkDiagonalB(posX, posY, figure) {
     }
   } while(left === false || right === false)
 
-  console.log(condition + ("(diagonalB) | winning condition = " + settings.winningCondition));
-  console.log("=========================");
   if(condition >= settings.winningCondition) {
     drawWinningLine(leftX, leftY + getCellSize(), rightX + getCellSize(), rightY)
   }
@@ -184,7 +178,8 @@ function checkHorizontal(posX, posY, figure) {
 
   do {
     if (left === false) {
-      if (cellExists(leftX - getCellSize(), posY) && getCell(leftX - getCellSize(), posY).figure === figure) {
+      if (cellExists(leftX - getCellSize(), posY) &&
+          getCell(leftX - getCellSize(), posY).figure === figure) {
         condition++;
         leftX -= getCellSize();
       }
@@ -192,7 +187,8 @@ function checkHorizontal(posX, posY, figure) {
         left = true;
     }
     if (right === false) {
-      if (cellExists(rightX + getCellSize(), posY) && getCell(rightX + getCellSize(), posY).figure === figure) {
+      if (cellExists(rightX + getCellSize(), posY) &&
+          getCell(rightX + getCellSize(), posY).figure === figure) {
         condition++;
         rightX += getCellSize();
       }
@@ -201,7 +197,6 @@ function checkHorizontal(posX, posY, figure) {
     }
   } while(left === false || right === false)
 
-  console.log(condition >= ("(horizontal) | winning condition = " + settings.winningCondition));
   if(condition === settings.winningCondition) {
     drawWinningLine(leftX, posY + getCellSize() / 2, rightX + getCellSize(), posY + getCellSize() / 2)
   }
@@ -214,7 +209,8 @@ function checkVertical(posX, posY, figure) {
 
   do {
     if (up === false) {
-      if (cellExists(posX, upY - getCellSize()) && getCell(posX, upY - getCellSize()).figure === figure) {
+      if (cellExists(posX, upY - getCellSize()) &&
+          getCell(posX, upY - getCellSize()).figure === figure) {
         condition++;
         upY -= getCellSize();
       }
@@ -222,7 +218,8 @@ function checkVertical(posX, posY, figure) {
         up = true;
     }
     if (down === false) {
-      if (cellExists(posX, downY + getCellSize()) && getCell(posX, downY + getCellSize()).figure === figure) {
+      if (cellExists(posX, downY + getCellSize()) &&
+          getCell(posX, downY + getCellSize()).figure === figure) {
         condition++;
         downY += getCellSize();
       }
@@ -232,7 +229,6 @@ function checkVertical(posX, posY, figure) {
 
   } while(up === false || down === false)
 
-  console.log(condition + ("(vertical) | winning condition = " + settings.winningCondition));
   if(condition >= settings.winningCondition) {
     drawWinningLine(posX + getCellSize() / 2, upY, posX + getCellSize() / 2, downY + getCellSize())
   }
@@ -244,6 +240,9 @@ function drawWinningLine(posX1, posY1, posX2, posY2) {
   ctx.moveTo(posX1, posY1);
   ctx.lineTo(posX2, posY2);
   ctx.stroke();
+
+  paused = true;
+  setTimeout(function(){initBoard()}, 1000);
 }
 
 function drawX(posX, posY) {
@@ -263,7 +262,8 @@ function drawO(posX, posY) {
   ctx.lineWidth = 3;
   ctx.strokeStyle = "#555";
   ctx.beginPath();
-  ctx.arc(Math.floor((posX + getCellSize() / 2)), Math.floor(posY + getCellSize() / 2), (getCellSize() / 2) - 100 / settings.boardSize, 0, 2 * Math.PI)
+  ctx.arc(Math.floor((posX + getCellSize() / 2)), Math.floor(posY + getCellSize() / 2),
+                    (getCellSize() / 2) - 100 / settings.boardSize, 0, 2 * Math.PI)
   ctx.stroke();
   ctx.lineWidth = 1;
   ctx.strokeStyle = "#333";
@@ -271,11 +271,9 @@ function drawO(posX, posY) {
 
 function cellExists(posX, posY) {
   if (posX >= 0 && posX <= (canvas.width - 1) && posY >= 0 && posY <= (canvas.height - 1)) {
-    console.log("cell " + posX + ", " + posY + "exists");
     return true;
   }
   else {
-    console.log("cell " + posX + ", " + posY + "doesnt exists");
     return false;
   }
 }
@@ -316,7 +314,6 @@ function initBoard() {
   var currentRow = 0;
   var currentCol = 0;
 
-  console.log("------------------------------");
   for (var i = 0; i < settings.boardSize * settings.boardSize; i++) {
     if (currentCol == settings.boardSize && i > 0) {
       currentRow++;
@@ -325,13 +322,13 @@ function initBoard() {
 
     board[i] = new cell(currentCol * getCellSize(), currentRow * getCellSize());
     currentCol++;
-    console.log("Cell " + i + " X: " + board[i].posX + " Y: " + board[i].posY);
   }
-  console.log("------------------------------");
   drawBoard();
+  paused = false;
 }
 
 function putFigure(event) {
+  if (!paused) {
     var x = event.clientX - canvas.getBoundingClientRect().left;
     var y = event.clientY - canvas.getBoundingClientRect().top;
 
@@ -346,6 +343,7 @@ function putFigure(event) {
         turn ^= 1;
       }
     }
+  }
 }
 
 function drawBoard() {
