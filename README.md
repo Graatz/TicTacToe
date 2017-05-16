@@ -1,2 +1,1 @@
-https://graatz.github.io/TicTacToe/
-
+Demo: https://graatz.github.io/tic-tac-toe/
